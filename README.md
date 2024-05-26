@@ -1,3 +1,1 @@
-## Features
-
-Open AI Utilities
+## Open AI Utilities
