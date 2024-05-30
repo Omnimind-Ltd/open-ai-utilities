@@ -50,7 +50,10 @@ class ChatDBImpl implements ChatDB {
     );
 
     final id = await box.add(hiveChat);
-    return chat.copyWith(id: id);
+    chat = chat.copyWith(id: id);
+    await putChat(chat);
+
+    return chat;
   }
 
   @override

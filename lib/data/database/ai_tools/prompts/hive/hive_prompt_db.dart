@@ -68,8 +68,10 @@ class PromptDBImpl extends PromptDB {
     );
 
     final id = await box.add(hivePrompt);
+    prompt = prompt.copyWith(id: id);
+    await putPrompt(prompt);
 
-    return prompt.copyWith(id: id);
+    return prompt;
   }
 
   @override

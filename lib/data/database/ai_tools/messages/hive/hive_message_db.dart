@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:open_ai_utilities/data/database/hive/hive_db.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/message.dart';
 
 import '../message_db.dart';
@@ -18,7 +19,7 @@ class MessageDBImpl extends MessageDB {
 
   FutureOr<LazyBox<HiveMessage>> _getBox(int chatId) async {
     if (!_boxes.containsKey(chatId)) {
-      if (!Hive.isAdapterRegistered(101)) {
+      if (!Hive.isAdapterRegistered(hiveTypeIdMessage)) {
         Hive.registerAdapter(HiveMessageAdapter());
       }
 
@@ -70,7 +71,10 @@ class MessageDBImpl extends MessageDB {
     );
 
     final id = await box.add(hiveMessage);
-    return message.copyWith(id: id);
+    message = message.copyWith(id: id);
+    await putMessage(message);
+
+    return message;
   }
 
   @override

@@ -1,10 +1,11 @@
 // Copyright (c) 2024. Omnimind Ltd.
 
 import 'package:hive_flutter/adapters.dart';
+import 'package:open_ai_utilities/data/database/hive/hive_db.dart';
 
 part 'hive_message.g.dart';
 
-@HiveType(typeId: 101)
+@HiveType(typeId: hiveTypeIdMessage)
 class HiveMessage {
   @HiveField(0)
   int id;
