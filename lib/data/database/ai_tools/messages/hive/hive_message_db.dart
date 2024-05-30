@@ -18,7 +18,10 @@ class MessageDBImpl extends MessageDB {
 
   FutureOr<LazyBox<HiveMessage>> _getBox(int chatId) async {
     if (!_boxes.containsKey(chatId)) {
-      Hive.registerAdapter(HiveMessageAdapter());
+      if (!Hive.isAdapterRegistered(101)) {
+        Hive.registerAdapter(HiveMessageAdapter());
+      }
+
       _boxes[chatId] =
           await Hive.openLazyBox<HiveMessage>('messages_$chatId.store');
     }
