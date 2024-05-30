@@ -42,24 +42,27 @@ class _ChatGPTPageState extends ConsumerState<ChatGPTWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (widget.chatsVisible) const _ChatsWidget(),
-        const Expanded(child: _MainWidget()),
-        if (widget.modelVisible || widget.promptsVisible)
-          SizedBox(
-            width: 250,
-            child: Column(
-              children: [
-                if (widget.modelVisible) const _ModelSettingsWidget(),
-                if (widget.promptsVisible)
-                  const Expanded(
-                    child: _PromptsWidget(),
-                  ),
-              ],
-            ),
-          )
-      ],
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: Row(
+        children: [
+          if (widget.chatsVisible) const _ChatsWidget(),
+          const Expanded(child: _MainWidget()),
+          if (widget.modelVisible || widget.promptsVisible)
+            SizedBox(
+              width: 250,
+              child: Column(
+                children: [
+                  if (widget.modelVisible) const _ModelSettingsWidget(),
+                  if (widget.promptsVisible)
+                    const Expanded(
+                      child: _PromptsWidget(),
+                    ),
+                ],
+              ),
+            )
+        ],
+      ),
     );
   }
 }
@@ -169,7 +172,7 @@ class _ModelSettingsWidget extends ConsumerWidget {
                 return viewModel.models
                     .map((e) => PopupMenuItem<String>(
                           value: e,
-                          child: Text(e),
+                          child: AppText.titleMedium(e),
                         ))
                     .toList();
               },
@@ -618,7 +621,7 @@ class _PromptsWidget extends ConsumerWidget {
                           },
                           child: ListTile(
                             contentPadding: const EdgeInsets.only(left: 12),
-                            title: Text(prompt.title),
+                            title: AppText.titleMedium(prompt.title),
                             trailing: PopupMenuButton<int>(
                               icon: const Icon(Icons.more_vert),
                               onSelected: (int item) {
@@ -684,6 +687,7 @@ class _MainWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(viewModelProvider);
+    final theme = Theme.of(context);
 
     late Widget widget;
 
@@ -766,7 +770,7 @@ class _MainWidget extends ConsumerWidget {
             },
           )),
           Container(
-            color: Colors.grey.shade200,
+            color: theme.colorScheme.surfaceContainer,
             padding: const EdgeInsets.only(
               top: 8.0,
               bottom: 6.0,
@@ -782,15 +786,15 @@ class _MainWidget extends ConsumerWidget {
                     controller: viewModel.textEditingController,
                     onChanged: viewModel.onTextUpdated,
                     decoration: const InputDecoration(
-                        hintText: 'Enter prompt',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 8,
-                        )),
+                      hintText: 'Enter prompt',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                    ),
                     maxLines: viewModel.textFieldLines,
                     onEditingComplete: viewModel.onEditingComplete,
-                    style: const TextStyle(color: Colors.black),
                   ),
                 ),
                 IconButton(
@@ -818,7 +822,6 @@ class _MainWidget extends ConsumerWidget {
             onTap: viewModel.onDownloadChatPressed,
             child: const Icon(
               Icons.download_for_offline,
-              color: Colors.white,
             ),
           ),
           const Gutter(8),
@@ -826,7 +829,6 @@ class _MainWidget extends ConsumerWidget {
             onTap: viewModel.onClearChatPressed,
             child: const Icon(
               Icons.delete,
-              color: Colors.white,
             ),
           ),
         ],

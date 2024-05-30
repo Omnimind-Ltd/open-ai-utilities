@@ -27,9 +27,9 @@ class _InteractiveButtonState extends State<InteractiveButton> {
     return Container(
       decoration: BoxDecoration(
         color: _tapped
-            ? Colors.grey.shade300
+            ? Colors.grey.shade300.withOpacity(0.2)
             : _hovering
-                ? Colors.grey.shade200
+                ? Colors.grey.shade200.withOpacity(0.2)
                 : Colors.transparent,
       ),
       child: MouseRegion(
