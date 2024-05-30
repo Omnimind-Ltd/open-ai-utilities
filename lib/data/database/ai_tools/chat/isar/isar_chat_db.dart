@@ -2,16 +2,16 @@
 
 import 'dart:async';
 
-import 'package:open_ai_utilities/data/database/isar/isar_db.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+import 'package:open_ai_utilities/data/database/isar/isar_db.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/chat.dart';
 
 import '../chat_db.dart';
 import 'isar_chat.dart';
 
-class IsarChatDB implements ChatDB {
-  IsarChatDB(Ref ref) : _isarService = ref.read(isarServiceProvider);
+class ChatDBImpl implements ChatDB {
+  ChatDBImpl(Ref ref) : _isarService = ref.read(isarServiceProvider);
 
   final IsarService _isarService;
 
@@ -33,22 +33,32 @@ class IsarChatDB implements ChatDB {
   }
 
   @override
-  Future<Chat> putChat(Chat chat) async {
+  Future<Chat> addChat(Chat chat) async {
     final isar = await _isarService.get();
 
     final p = IsarChat()
       ..creationDate = chat.creationDate
       ..model = chat.model;
 
-    if (chat.id != 0) {
-      p.id = chat.id;
-    }
-
     final id = await isar.writeTxn(() async {
       return await isar.isarChats.put(p);
     });
 
     return chat.copyWith(id: id);
+  }
+
+  @override
+  Future<void> putChat(Chat chat) async {
+    final isar = await _isarService.get();
+
+    final p = IsarChat()
+      ..id = chat.id
+      ..creationDate = chat.creationDate
+      ..model = chat.model;
+
+    await isar.writeTxn(() async {
+      return await isar.isarChats.put(p);
+    });
   }
 
   @override

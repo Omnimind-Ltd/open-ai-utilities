@@ -7,7 +7,7 @@ import 'package:open_ai_utilities/data/database/ai_tools/prompts/prompt_db.dart'
 import 'package:open_ai_utilities/data/model/db_operation.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/prompt.dart';
 
-import 'generative_ai.dart';
+import 'generative_ai_service.dart';
 
 class GenerativeAIServiceImpl extends GenerativeAIService {
   GenerativeAIServiceImpl(Ref ref) : _promptDB = ref.read(promptDBProvider);
@@ -27,14 +27,15 @@ class GenerativeAIServiceImpl extends GenerativeAIService {
   }
 
   @override
-  Future<void> savePrompt(Prompt prompt) async {
-    prompt = await _promptDB.putPrompt(prompt);
+  Future<void> addPrompt(Prompt prompt) async {
+    prompt = await _promptDB.addPrompt(prompt);
+    _promptsUpdatedStreamController.add(DBOperation.create(prompt));
+  }
 
-    if (prompt.id == 0) {
-      _promptsUpdatedStreamController.add(DBOperation.create(prompt));
-    } else {
-      _promptsUpdatedStreamController.add(DBOperation.update(prompt));
-    }
+  @override
+  Future<void> updatePrompt(Prompt prompt) async {
+    await _promptDB.putPrompt(prompt);
+    _promptsUpdatedStreamController.add(DBOperation.update(prompt));
   }
 
   @override

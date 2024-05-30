@@ -34,13 +34,9 @@ class MemPromptDB extends PromptDB {
   }
 
   @override
-  Future<Prompt> putPrompt(Prompt prompt) async {
-    var id = prompt.id;
-
-    if (id == 0) {
-      id = this.id;
-      this.id++;
-    }
+  Future<Prompt> addPrompt(Prompt prompt) async {
+    var id = this.id;
+    this.id++;
 
     _prompts[id] = MemPrompt(
       id: prompt.id,
@@ -49,6 +45,15 @@ class MemPromptDB extends PromptDB {
     );
 
     return prompt.copyWith(id: id);
+  }
+
+  @override
+  Future<void> putPrompt(Prompt prompt) async {
+    _prompts[prompt.id] = MemPrompt(
+      id: prompt.id,
+      title: prompt.title,
+      prompt: prompt.prompt,
+    );
   }
 
   @override

@@ -1,12 +1,10 @@
 // Copyright (c) 2024. Omnimind Ltd.
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:dart_openai/dart_openai.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_ai_utilities/data/model/db_operation.dart';
@@ -14,7 +12,8 @@ import 'package:open_ai_utilities/data/model/generative_ai/chat.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/message.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/model_type.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/prompt.dart';
-import 'package:open_ai_utilities/data/services/generative_ai/generative_ai.dart';
+import 'package:open_ai_utilities/data/services/file/file_service.dart';
+import 'package:open_ai_utilities/data/services/generative_ai/generative_ai_service.dart';
 import 'package:open_ai_utilities/data/services/open_ai/open_ai_service.dart';
 
 import '../dialog/prompt_dialog/prompt_dialog.dart';
@@ -27,7 +26,8 @@ final viewModelProvider =
 class ChatGPTViewModel extends ChangeNotifier {
   ChatGPTViewModel(Ref ref)
       : _generativeAIService = ref.read(generativeAIServiceProvider),
-        _openAIService = ref.read(openAIServiceProvider) {
+        _openAIService = ref.read(openAIServiceProvider),
+        _fileService = ref.read(fileServiceProvider) {
     loading = true;
 
     _promptsUpdatedSubscription =
@@ -42,6 +42,7 @@ class ChatGPTViewModel extends ChangeNotifier {
 
   final GenerativeAIService _generativeAIService;
   final OpenAIService _openAIService;
+  final FileService _fileService;
 
   late final StreamSubscription<DBOperation<Prompt>>
       _promptsUpdatedSubscription;
@@ -157,7 +158,7 @@ class ChatGPTViewModel extends ChangeNotifier {
           return PromptDialog(prompt: prompt);
         }).then((prompt) {
       if (prompt != null) {
-        _generativeAIService.savePrompt(prompt);
+        _generativeAIService.addPrompt(prompt);
       }
     });
   }
@@ -169,7 +170,7 @@ class ChatGPTViewModel extends ChangeNotifier {
           return PromptDialog(prompt: prompt);
         }).then((prompt) {
       if (prompt != null) {
-        _generativeAIService.savePrompt(prompt);
+        _generativeAIService.updatePrompt(prompt);
       }
     });
   }
@@ -243,33 +244,20 @@ class ChatGPTViewModel extends ChangeNotifier {
   }
 
   void onDownloadChatPressed() async {
-    var outputFile = await FilePicker.platform.saveFile(
-      dialogTitle: 'Save to:',
-      fileName: 'chat.txt',
-    );
+    final buffer = StringBuffer();
 
-    if (outputFile != null) {
-      final buffer = StringBuffer();
-
-      for (final message in _messages) {
-        buffer.writeln('${message.role.name.toUpperCase()}:');
-        buffer.writeln(message.content);
-        buffer.writeln('---');
-      }
-
-      File(outputFile).writeAsStringSync(buffer.toString());
+    for (final message in _messages) {
+      buffer.writeln('${message.role.name.toUpperCase()}:');
+      buffer.writeln(message.content);
+      buffer.writeln('---');
     }
+
+    await _fileService.saveString(
+        content: buffer.toString(), fileName: 'chat.txt');
   }
 
   void onDownloadImagePressed(Uint8List bytes) async {
-    var outputFile = await FilePicker.platform.saveFile(
-      dialogTitle: 'Save to:',
-      fileName: 'image.png',
-    );
-
-    if (outputFile != null) {
-      File(outputFile).writeAsBytesSync(bytes);
-    }
+    await _fileService.saveBytes(bytes: bytes, fileName: 'image.png');
   }
 
   void onNumChoicesUpdated(double value) {

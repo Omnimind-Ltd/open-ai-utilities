@@ -104,7 +104,7 @@ class OpenAIServiceImpl extends OpenAIService {
 
   @override
   Future<Chat> newChat() async {
-    final chat = await _chatDB.putChat(Chat(
+    final chat = await _chatDB.addChat(Chat(
       creationDate: DateTime.now(),
       model: _textModels.first,
     ));
@@ -165,7 +165,7 @@ class OpenAIServiceImpl extends OpenAIService {
       ),
     );
 
-    final message = await _messageDB.putMessage(
+    final message = await _messageDB.addMessage(
       Message.text(text, chatId: chatId, role: OpenAIChatMessageRole.user),
     );
 
@@ -218,9 +218,7 @@ class OpenAIServiceImpl extends OpenAIService {
           }
 
           if (choice.finishReason != null) {
-            activeMessages[choice.index] =
-                activeMessages[choice.index]!.copyWith(id: 0);
-            _messageDB.putMessage(activeMessages[choice.index]!);
+            _messageDB.addMessage(activeMessages[choice.index]!);
             activeMessages.remove(choice.index);
             activeMessageBuffers.remove(choice.index);
             finishCount++;
@@ -249,7 +247,7 @@ class OpenAIServiceImpl extends OpenAIService {
       return;
     }
 
-    final message = await _messageDB.putMessage(
+    final message = await _messageDB.addMessage(
       Message.text(text, chatId: chatId, role: OpenAIChatMessageRole.user),
     );
 

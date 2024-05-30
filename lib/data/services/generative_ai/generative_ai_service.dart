@@ -17,7 +17,9 @@ abstract class GenerativeAIService {
 
   Future<List<Prompt>> getPrompts();
 
-  Future<void> savePrompt(Prompt prompt);
+  Future<void> addPrompt(Prompt prompt);
+
+  Future<void> updatePrompt(Prompt prompt);
 
   Future<void> deletePrompt(int promptId);
 }

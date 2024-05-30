@@ -29,7 +29,7 @@ class MemMessageDB extends MessageDB {
         .map((e) => Message(
               chatId: e.chatId,
               role: OpenAIChatMessageRole.values
-                  .singleWhere((element) => element.name == e.role),
+                  .singleWhere((f) => f.name == e.role),
               type: MessageType.values.singleWhere((t) => t.name == e.type),
               content: e.content,
             ))
@@ -37,13 +37,9 @@ class MemMessageDB extends MessageDB {
   }
 
   @override
-  Future<Message> putMessage(Message message) async {
-    var id = message.id;
-
-    if (id == 0) {
-      id = this.id;
-      this.id++;
-    }
+  Future<Message> addMessage(Message message) async {
+    var id = this.id;
+    this.id++;
 
     if (!_messages.containsKey(message.chatId)) {
       _messages[message.chatId] = <MemMessage>[];
@@ -57,18 +53,29 @@ class MemMessageDB extends MessageDB {
       content: message.content,
     );
 
-    if (message.id == 0) {
-      _messages[message.chatId]!.add(m);
+    _messages[message.chatId]!.add(m);
 
-      return message.copyWith(id: id);
-    } else {
-      final index =
-          _messages[message.chatId]!.indexWhere((e) => e.id == message.id);
+    return message.copyWith(id: id);
+  }
 
-      _messages[message.chatId]!.removeAt(index);
-      _messages[message.chatId]!.insert(index, m);
+  @override
+  Future<void> putMessage(Message message) async {
+    if (!_messages.containsKey(message.chatId)) {
+      _messages[message.chatId] = <MemMessage>[];
     }
 
-    return message;
+    final m = MemMessage(
+      id: message.id,
+      chatId: message.chatId,
+      role: message.role.name,
+      type: message.type.name,
+      content: message.content,
+    );
+
+    final index =
+        _messages[message.chatId]!.indexWhere((e) => e.id == message.id);
+
+    _messages[message.chatId]!.removeAt(index);
+    _messages[message.chatId]!.insert(index, m);
   }
 }

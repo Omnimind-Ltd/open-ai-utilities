@@ -1,18 +1,18 @@
 // Copyright (c) 2024. Omnimind Ltd.
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:open_ai_utilities/data/model/generative_ai/message.dart';
-import 'package:open_ai_utilities/data/model/generative_ai/model_type.dart';
-import 'package:open_ai_utilities/ui/widgets/button/interactive_button.dart';
-import 'package:open_ai_utilities/ui/widgets/container/titled_widget.dart';
-import 'package:open_ai_utilities/ui/widgets/loading_widget.dart';
-import 'package:open_ai_utilities/ui/widgets/text/app_text.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlighting/flutter_highlighting.dart';
 import 'package:flutter_highlighting/themes/dracula.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
+import 'package:open_ai_utilities/data/model/generative_ai/message.dart';
+import 'package:open_ai_utilities/data/model/generative_ai/model_type.dart';
+import 'package:open_ai_utilities/ui/widgets/button/interactive_button.dart';
+import 'package:open_ai_utilities/ui/widgets/container/titled_widget.dart';
+import 'package:open_ai_utilities/ui/widgets/loading_widget.dart';
+import 'package:open_ai_utilities/ui/widgets/text/app_text.dart';
 
 import 'chat_gpt_view_model.dart';
 
@@ -33,7 +33,6 @@ class ChatGPTWidget extends ConsumerStatefulWidget {
 }
 
 class _ChatGPTPageState extends ConsumerState<ChatGPTWidget> {
-
   @override
   void initState() {
     super.initState();
@@ -43,7 +42,6 @@ class _ChatGPTPageState extends ConsumerState<ChatGPTWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     return Row(
       children: [
         if (widget.chatsVisible) const _ChatsWidget(),
@@ -695,6 +693,7 @@ class _MainWidget extends ConsumerWidget {
       );
     } else {
       widget = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
               child: ListView.builder(
@@ -928,7 +927,7 @@ class _HighlightedTextWidget extends StatelessWidget {
 
     return SelectionArea(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: children,
       ),

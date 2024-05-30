@@ -27,13 +27,9 @@ class MemChatDB implements ChatDB {
   }
 
   @override
-  Future<Chat> putChat(Chat chat) async {
-    var id = chat.id;
-
-    if (id == 0) {
-      id = this.id;
-      this.id++;
-    }
+  Future<Chat> addChat(Chat chat) async {
+    var id = this.id;
+    this.id++;
 
     _chats[id] = MemChat(
       id: id,
@@ -42,6 +38,15 @@ class MemChatDB implements ChatDB {
     );
 
     return chat.copyWith(id: id);
+  }
+
+  @override
+  Future<void> putChat(Chat chat) async {
+    _chats[chat.id] = MemChat(
+      id: id,
+      creationDate: chat.creationDate,
+      model: chat.model,
+    );
   }
 
   @override
