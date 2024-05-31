@@ -248,7 +248,7 @@ class ChatGPTViewModel extends ChangeNotifier {
 
     for (final message in _messages) {
       buffer.writeln('${message.role.name.toUpperCase()}:');
-      buffer.writeln(message.content);
+      buffer.writeln(message.contentString);
       buffer.writeln('---');
     }
 
