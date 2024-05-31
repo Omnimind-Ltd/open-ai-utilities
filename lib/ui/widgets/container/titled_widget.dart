@@ -24,10 +24,12 @@ class TitledWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: theme.colorScheme.primaryContainer,
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           boxShadow: [
             BoxShadow(
@@ -48,7 +50,7 @@ class TitledWidget extends StatelessWidget {
                 right: 4,
               ),
               decoration: BoxDecoration(
-                color: Colors.black87,
+                color: theme.colorScheme.secondaryContainer,
                 border: Border.all(),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(7),
