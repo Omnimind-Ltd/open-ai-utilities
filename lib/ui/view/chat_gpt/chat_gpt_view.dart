@@ -5,6 +5,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlighting/flutter_highlighting.dart';
 import 'package:flutter_highlighting/themes/dracula.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:layout/layout.dart';
 import 'package:open_ai_utilities/data/model/generative_ai/message.dart';
@@ -696,6 +697,59 @@ class _MainWidget extends ConsumerWidget {
         child: LoadingWidget(),
       );
     } else {
+      final baseTextStyle = Theme.of(context).textTheme.bodyMedium!;
+      final styleSheet = MarkdownStyleSheet(
+        p: baseTextStyle.copyWith(
+            fontSize: 16.0, color: Colors.black87, fontWeight: FontWeight.w400),
+        pPadding: const EdgeInsets.symmetric(vertical: 3),
+        h1: baseTextStyle.copyWith(
+            fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.black87),
+        h1Padding: const EdgeInsets.symmetric(vertical: 3),
+        h2: baseTextStyle.copyWith(
+            fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.black87),
+        h2Padding: const EdgeInsets.symmetric(vertical: 3),
+        h3: baseTextStyle.copyWith(
+            fontSize: 24.0, fontWeight: FontWeight.bold, color: Colors.black87),
+        h3Padding: const EdgeInsets.symmetric(vertical: 3),
+        h4: baseTextStyle.copyWith(
+            fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black87),
+        h4Padding: const EdgeInsets.symmetric(vertical: 3),
+        h5: baseTextStyle.copyWith(
+            fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.black87),
+        h5Padding: const EdgeInsets.symmetric(vertical: 3),
+        h6: baseTextStyle.copyWith(
+            fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black87),
+        h6Padding: const EdgeInsets.symmetric(vertical: 3),
+        code: baseTextStyle.copyWith(
+          fontFamily: 'monospace',
+          color: Colors.purple[700],
+          backgroundColor: Colors.grey[100],
+          fontSize: 14.0,
+        ),
+        codeblockPadding: const EdgeInsets.symmetric(vertical: 10),
+        blockquote: baseTextStyle
+            .copyWith(
+              color: Colors.black54,
+              fontStyle: FontStyle.italic,
+            )
+            .merge(TextStyle(color: Colors.teal[200])),
+        listBullet: baseTextStyle.copyWith(color: Colors.black87),
+        a: baseTextStyle.copyWith(
+            color: Colors.blue, decoration: TextDecoration.underline),
+        tableHead: baseTextStyle.copyWith(
+            fontWeight: FontWeight.bold, color: Colors.black87),
+        tableBody: baseTextStyle.copyWith(color: Colors.black87),
+        img: baseTextStyle,
+        horizontalRuleDecoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              width: 1.0,
+              color: Colors.grey[300]!,
+            ),
+          ),
+        ),
+      );
+
       widget = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -713,7 +767,10 @@ class _MainWidget extends ConsumerWidget {
 
               switch (item.type) {
                 case MessageType.text:
-                  widget = _HighlightedTextWidget(text: item.contentString);
+                  widget = _HighlightedTextWidget(
+                    text: item.contentString,
+                    markdownStyleSheet: styleSheet,
+                  );
                   break;
                 case MessageType.image:
                   widget = Stack(children: [
@@ -852,11 +909,17 @@ const _languageMap = {
 };
 
 class _HighlightedTextWidget extends StatelessWidget {
-  _HighlightedTextWidget({required String text}) : _text = text;
+  _HighlightedTextWidget({
+    required String text,
+    MarkdownStyleSheet? markdownStyleSheet,
+  })  : _text = text,
+        _markdownStyleSheet = markdownStyleSheet;
 
   final String _text;
 
   final _focusNode = FocusNode();
+
+  final MarkdownStyleSheet? _markdownStyleSheet;
 
   @override
   Widget build(BuildContext context) {
@@ -872,12 +935,21 @@ class _HighlightedTextWidget extends StatelessWidget {
       endIndex = _text.indexOf(codeDelimiter, startIndex);
 
       if (endIndex == -1) {
-        children.add(SyntaxHighlightingText(text: _text.substring(startIndex)));
+        children.add(Markdown(
+          data: _text.substring(startIndex),
+          padding: EdgeInsets.zero,
+          styleSheet: _markdownStyleSheet,
+          shrinkWrap: true,
+        ));
         break;
       } else {
         if (startIndex != endIndex) {
-          children.add(SyntaxHighlightingText(
-              text: _text.substring(startIndex, endIndex - 1)));
+          children.add(Markdown(
+            data: _text.substring(startIndex, endIndex - 1),
+            padding: EdgeInsets.zero,
+            styleSheet: _markdownStyleSheet,
+            shrinkWrap: true,
+          ));
         }
 
         startIndex = endIndex + codeDelimiter.length;
