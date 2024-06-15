@@ -903,6 +903,7 @@ const _languageMap = {
   'jsx': 'javascript',
   'sh': 'bash',
   'svelte': 'xml',
+  'svg': 'xml',
   'tsx': 'javascript',
   'groovy': 'plaintext',
   'toml': 'plaintext',

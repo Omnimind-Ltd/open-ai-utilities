@@ -51,6 +51,8 @@ class ChatGPTViewModel extends ChangeNotifier {
 
   final textEditingController = TextEditingController();
 
+  String? previousText;
+
   final focusNode = FocusNode();
 
   final _chats = <Chat>[];
@@ -308,7 +310,14 @@ class ChatGPTViewModel extends ChangeNotifier {
   }
 
   void onTextUpdated(String? text) {
-    notifyListeners();
+    final empty = text?.isEmpty ?? true;
+    final wasEmpty = previousText?.isEmpty ?? true;
+
+    if (empty != wasEmpty) {
+      notifyListeners();
+    }
+
+    previousText = text;
   }
 
   void onEditingComplete() {
@@ -383,6 +392,10 @@ class ChatGPTViewModel extends ChangeNotifier {
   }
 
   void _onMessageUpdated(DBOperation<Message> operation) {
+    if (operation.data.chatId != _activeChatId) {
+      return;
+    }
+
     if (operation.type == DBOperationType.update) {
       messages.removeWhere((e) => e.id == operation.data.id);
       messages.add(operation.data);
