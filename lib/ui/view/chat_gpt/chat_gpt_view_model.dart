@@ -51,8 +51,6 @@ class ChatGPTViewModel extends ChangeNotifier {
 
   final textEditingController = TextEditingController();
 
-  String? previousText;
-
   final focusNode = FocusNode();
 
   final _chats = <Chat>[];
@@ -87,7 +85,9 @@ class ChatGPTViewModel extends ChangeNotifier {
     return lines < 10 ? lines : 10;
   }
 
-  bool get submitButtonEnabled => textEditingController.text.trim().isNotEmpty;
+  bool _submitButtonEnabled = false;
+
+  bool get submitButtonEnabled => _submitButtonEnabled;
 
   List<Prompt> get promptItems => _prompts;
 
@@ -242,6 +242,7 @@ class ChatGPTViewModel extends ChangeNotifier {
     }
 
     textEditingController.text = '';
+    _submitButtonEnabled = false;
     notifyListeners();
   }
 
@@ -310,14 +311,17 @@ class ChatGPTViewModel extends ChangeNotifier {
   }
 
   void onTextUpdated(String? text) {
-    final empty = text?.isEmpty ?? true;
-    final wasEmpty = previousText?.isEmpty ?? true;
-
-    if (empty != wasEmpty) {
-      notifyListeners();
+    if (text?.isEmpty ?? true) {
+      if (_submitButtonEnabled) {
+        _submitButtonEnabled = false;
+        notifyListeners();
+      }
+    } else {
+      if (!_submitButtonEnabled) {
+        _submitButtonEnabled = true;
+        notifyListeners();
+      }
     }
-
-    previousText = text;
   }
 
   void onEditingComplete() {
