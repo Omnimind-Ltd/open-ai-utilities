@@ -20,6 +20,8 @@ const _textModels = [
   'gpt-4o',
   'gpt-4-turbo',
   'gpt-4',
+  'o1-preview',
+  'o1-mini',
   'gpt-3.5-turbo',
 ];
 

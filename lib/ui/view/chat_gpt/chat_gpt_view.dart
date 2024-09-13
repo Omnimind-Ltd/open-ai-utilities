@@ -902,11 +902,14 @@ const _languageMap = {
   'js': 'javascript',
   'jsx': 'javascript',
   'sh': 'bash',
+  'proguard': 'plaintext',
   'svelte': 'xml',
   'svg': 'xml',
+  'text': 'plaintext',
   'tsx': 'javascript',
   'groovy': 'plaintext',
   'toml': 'plaintext',
+  'xcconfig': 'plaintext',
 };
 
 class _HighlightedTextWidget extends StatelessWidget {
