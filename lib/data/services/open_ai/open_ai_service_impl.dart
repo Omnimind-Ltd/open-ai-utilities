@@ -18,10 +18,10 @@ import 'open_ai_service.dart';
 
 const _textModels = [
   'gpt-4o',
+  'o1',
+  'o3-mini',
   'gpt-4-turbo',
   'gpt-4',
-  'o1-preview',
-  'o1-mini',
   'gpt-3.5-turbo',
 ];
 
